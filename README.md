@@ -7,7 +7,7 @@ This is the backend service for the Personal Journaling App, built with Node.js,
 ### Prerequisites
 
 - Node.js (>= 14.x)
-- TypeScript
+- JavaScript
 - TypeORM
 
 ### Getting Started
@@ -30,7 +30,7 @@ This is the backend service for the Personal Journaling App, built with Node.js,
 
 4. **Run the Application**
 
-   npm start
+   node src/index.js
 
 5. **Run Tests**
 
