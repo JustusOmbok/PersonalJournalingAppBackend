@@ -1,16 +1,26 @@
-// user.test.js
 const request = require('supertest');
-const app = require('../src/index'); // Adjust the path as necessary
+const { createApp, startServer } = require('../src/index').default; // Adjust the path as necessary
 const { getConnection } = require('typeorm');
 
-describe('User Endpoints', () => {
-  afterAll(async () => {
-    await getConnection().close();
-  });
+let app, server;
 
+beforeAll(async () => {
+  await startServer(); // Start the server
+  app = createApp(); // Initialize the app
+});
+
+afterAll(async () => {
+  const connection = getConnection();
+  if (connection.isConnected) {
+    await connection.close(); // Close database connection
+  }
+  server.close(); // Close the server
+});
+
+describe('User Endpoints', () => {
   it('should register a user', async () => {
     const res = await request(app)
-      .post('/api/users/register')
+      .post('/api/auth/register')
       .send({
         username: 'testuser',
         password: 'password'
@@ -21,7 +31,7 @@ describe('User Endpoints', () => {
 
   it('should login a user', async () => {
     const res = await request(app)
-      .post('/api/users/login')
+      .post('/api/auth/login')
       .send({
         username: 'testuser',
         password: 'password'
@@ -32,14 +42,14 @@ describe('User Endpoints', () => {
 
   it('should get user profile', async () => {
     const loginRes = await request(app)
-      .post('/api/users/login')
+      .post('/api/auth/login')
       .send({
         username: 'testuser',
         password: 'password'
       });
 
     const res = await request(app)
-      .get('/api/users/profile')
+      .get('/api/auth/profile')
       .set('Authorization', `Bearer ${loginRes.body.token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('username', 'testuser');

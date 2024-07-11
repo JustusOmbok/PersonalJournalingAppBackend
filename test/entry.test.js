@@ -1,25 +1,31 @@
-// entry.test.js
 const request = require('supertest');
-const app = require('../src/index'); // Adjust the path as necessary
+const { createApp, startServer } = require('../src/index').default; // Adjust the path as necessary
 const { getConnection } = require('typeorm');
 
+let app;
+let server;
+let token;
+
+beforeAll(async () => {
+  await createConnection(); // Ensure the database connection is established
+  app = createApp();
+  server = await startServer(); // Start the server for testing
+  // Log in to get the authentication token
+  const res = await request(app)
+    .post('/api/auth/login')
+    .send({
+      username: 'testuser',
+      password: 'password'
+    });
+  token = res.body.token;
+});
+
+afterAll(async () => {
+  await server.close(); // Close the server after tests
+  await getConnection().close(); // Close database connection
+});
+
 describe('Entry Endpoints', () => {
-  let token;
-
-  beforeAll(async () => {
-    const res = await request(app)
-      .post('/api/users/login')
-      .send({
-        username: 'testuser',
-        password: 'password'
-      });
-    token = res.body.token;
-  });
-
-  afterAll(async () => {
-    await getConnection().close();
-  });
-
   it('should create an entry', async () => {
     const res = await request(app)
       .post('/api/entries')

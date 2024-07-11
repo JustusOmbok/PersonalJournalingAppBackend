@@ -1,10 +1,10 @@
-const express = require('express');
-const { getRepository } = require('typeorm');
-const Entry = require('../entity/Entry');
-const User = require('../entity/User');
-const { authenticateJWT } = require('../middleware/auth');
+import { Router } from 'express';
+import { getRepository } from 'typeorm';
+import Entry from '../entity/Entry';
+import User from '../entity/User';
+import { authenticateJWT } from '../middleware/auth';
 
-const router = express.Router();
+const router = Router();
 
 // Create entry
 router.post('/', authenticateJWT, async (req, res) => {
@@ -148,4 +148,4 @@ router.get('/summary/:period', authenticateJWT, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
